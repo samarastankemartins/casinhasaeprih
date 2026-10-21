@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Casinha da Samara e Priscila</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#C7D8A5;--card:#2B640E;--tx:#fbe3e9;--mut:#E9B0BB;--ac:#C25474;--ac2:#941B43;--soft:#E9B0BB;--bd:#6B843A;--hd:#033702;--hdtx:#C7D8A5;--btxt:#fff;--inp:#1f3a0c;--pk:#D98695;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#C7D8A5;--card:#2B640E;--tx:#fbe3e9;--mut:#E9B0BB;--ac:#C25474;--ac2:#941B43;--bd:#6B843A;--hd:#033702;--hdtx:#C7D8A5;--btxt:#fff;--inp:#1f3a0c;--pk:#D98695}}
+:root[data-theme="dark"]{--bg:#C7D8A5;--card:#2B640E;--tx:#fbe3e9;--mut:#E9B0BB;--ac:#C25474;--ac2:#941B43;--bd:#6B843A;--hd:#033702;--hdtx:#C7D8A5;--btxt:#fff;--inp:#1f3a0c;--pk:#D98695}
+*{box-sizing:border-box}html,body{margin:0}
+body{background:var(--bg);color:var(--tx);font-family:Montserrat,system-ui,sans-serif;line-height:1.5}
+header{background:var(--hd);color:var(--hdtx);text-align:center;padding:48px 20px 40px}
+header h1{margin:6px 0;font-size:clamp(26px,6vw,42px);color:#D98695}header p{margin:4px 0}
+.when{font-weight:700;font-size:18px;color:#D98695}
+main{max-width:980px;margin:0 auto;padding:20px 16px 60px}
+section{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:20px;margin:20px 0}
+h2{margin:0 0 12px;color:var(--pk);font-size:22px}
+label{display:block;font-weight:600;margin:10px 0 4px;font-size:14px}
+input[type=text],input[type=datetime-local],textarea{width:100%;padding:10px 12px;border:1px solid var(--bd);border-radius:10px;font:inherit;background:var(--inp);color:var(--tx)}
+button{font:inherit;font-weight:600;border:0;border-radius:10px;padding:10px 16px;background:var(--ac);color:var(--btxt);cursor:pointer}
+button.alt{background:transparent;color:var(--pk);border:1px solid var(--pk)}button:disabled{opacity:.5}
+.row{display:flex;gap:8px;align-items:center;margin:6px 0}.row input{flex:1}
+.opts{display:flex;gap:10px;flex-wrap:wrap}.opts label{display:flex;gap:6px;align-items:center;margin:0;padding:10px 14px;border:1px solid var(--bd);border-radius:10px;cursor:pointer}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px}
+.card{border:1px solid var(--bd);border-radius:14px;overflow:hidden;display:flex;flex-direction:column;background:var(--inp)}
+.ph{aspect-ratio:1;overflow:hidden;background:var(--soft)}.ph img{width:100%;height:100%;object-fit:cover;display:block;user-select:none;-webkit-user-drag:none}
+.card .bd{padding:12px;display:flex;flex-direction:column;gap:8px;flex:1;justify-content:space-between}
+.card.sel{outline:3px solid var(--ac2)}
+.stats{display:flex;gap:10px;flex-wrap:wrap}.stat{flex:1;min-width:120px;background:var(--inp);border:1px solid var(--bd);border-radius:12px;padding:12px;text-align:center}
+.stat b{display:block;font-size:26px;color:var(--pk)}
+.scroll{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:14px}th,td{text-align:left;padding:8px;border-bottom:1px solid var(--bd)}
+.muted{color:var(--mut);font-size:14px}
+#toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ac);color:var(--btxt);padding:10px 18px;border-radius:20px;opacity:0;transition:.3s;pointer-events:none}#toast.on{opacity:1}
+</style></head><body>
+<header>
+<div style="font-size:40px">🏡🌷</div>
+<h1>Casinha da Samara e Priscila</h1>
+<p>Chá de casa nova</p>
+<p class="when" id="evwhen">Data em breve</p>
+<p id="evplace"></p><p id="evnote" class="muted" style="color:var(--hdtx)"></p><p><button id="tgl" hidden></button></p>
+</header>
+<main>
+<section id="nodb" hidden><h2>Entre para participar</h2><p>Abra o link pelo convite enviado por Samara e Priscila para ver a lista e confirmar presença.</p></section>
+
+<section id="admin" hidden>
+<h2>Painel das anfitriãs</h2>
+<div class="stats"><div class="stat"><b id="sConf">0</b>confirmados</div><div class="stat"><b id="sComp">0</b>acompanhantes</div><div class="stat"><b id="sTot">0</b>pessoas no total</div><div class="stat"><b id="sNo">0</b>não vão</div></div>
+<h3>Quem respondeu</h3>
+<div class="scroll"><table><thead><tr><th>Nome</th><th>Resposta</th><th>Acompanhantes</th><th>Presentes</th></tr></thead><tbody id="guests"></tbody></table></div>
+<h3>Data, hora e local</h3>
+<label for="eWhen">Data e hora</label><input type="datetime-local" id="eWhen">
+<label for="ePlace">Local</label><input type="text" id="ePlace" placeholder="Endereço ou nome do local">
+<label for="eNote">Recado (opcional)</label><input type="text" id="eNote">
+<p><button id="saveEv">Salvar informações</button></p>
+<h3>Adicionar presente à lista</h3>
+<label for="pImg">Imagem do produto</label><input type="file" id="pImg" accept="image/*">
+<div id="prevWrap" hidden><p class="muted">Arraste a imagem para escolher a parte que aparece e use o controle para ampliar.</p><div class="ph" id="prev" style="max-width:260px;touch-action:none;cursor:grab"><img id="prevImg" alt=""></div><input type="range" id="zoom" min="1" max="3" step="0.05" value="1" style="max-width:260px;width:100%"></div>
+<label for="pDesc">Descrição do produto</label><textarea id="pDesc" rows="2"></textarea>
+<p><button id="addP">Adicionar à lista</button></p>
+</section>
+
+<section id="rsvp">
+<h2>Confirme sua presença</h2>
+<label for="nm">Seu nome</label><input type="text" id="nm" autocomplete="name">
+<label>Você vai?</label>
+<div class="opts"><label><input type="radio" name="st" value="sim"> Sim, estarei lá!</label><label><input type="radio" name="st" value="nao"> Não poderei ir</label></div>
+<label id="compLbl">Acompanhantes (nome de cada um)</label>
+<div id="comps"></div>
+<p><button class="alt" id="addC">+ Adicionar acompanhante</button></p>
+<p><button id="send">Enviar resposta</button> <button class="alt" id="del" hidden>Excluir minha resposta</button></p>
+<p class="muted">Escolher presentes é opcional: você pode confirmar sem escolher nenhum.</p><p class="muted" id="lockNote">Você pode alterar ou excluir sua resposta até 10 dias antes do evento.</p>
+</section>
+
+<section>
+<h2>Lista de presentes</h2>
+<p class="muted">Toque em “Quero presentear” nos itens que você pretende dar. Pode escolher quantos quiser, ou nenhum.</p>
+<div class="grid" id="gifts"></div>
+<p class="muted" id="empty">Ainda não há presentes na lista.</p>
+</section>
+</main>
+<div id="toast"></div>
+<script>
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let db,user,assets,uid,admin=false,products=[],rsvps=[],my={name:'',status:'',companions:[],items:[]},ev={},fx=50,fy=50,fz=1,hasResp=false,delArm=null;
+let adminMode=null;const adminView=()=>admin&&(adminMode===null?location.hash==='#anfitrias':adminMode);
+const locked=()=>ev.when?(new Date(ev.when).getTime()-10*864e5<Date.now()):false;
+function toast(m){const t=$('toast');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),2800)}
+function fmt(v){if(!v)return'';const d=new Date(v);return isNaN(d)?v:d.toLocaleString('pt-BR',{dateStyle:'full',timeStyle:'short'})}
+
+function drawEvent(e){ev=e;drawLock();
+  $('evwhen').textContent=fmt(e.when)||'Data em breve';
+  $('evplace').textContent=e.place?'📍 '+e.place:'';
+  $('evnote').textContent=e.note||'';
+  if(admin&&document.activeElement.tagName!=='INPUT'){$('eWhen').value=e.when||'';$('ePlace').value=e.place||'';$('eNote').value=e.note||''}
+}
+function drawGifts(){
+  $('empty').hidden=products.length>0;
+  $('gifts').innerHTML=products.map(p=>{
+    const sel=my.items.includes(p.id),n=rsvps.filter(r=>(r.items||[]).includes(p.id)).length;
+    return `<div class="card ${sel?'sel':''}"><div class="ph"><img src="${esc(p.img)}" alt="" loading="lazy" style="object-position:${p.fx==null?50:p.fx}% ${p.fy==null?50:p.fy}%;transform:scale(${p.z||1});transform-origin:${p.fx==null?50:p.fx}% ${p.fy==null?50:p.fy}%"></div><div class="bd"><span>${esc(p.desc)}</span>
+    ${adminView()?`<span class="muted">${n} escolha(s)</span>`:''}
+    <button data-t="${esc(p.id)}" class="${sel?'':'alt'}">${sel?'✓ Você escolheu':'Quero presentear'}</button>
+    ${adminView()?`<button class="alt" data-d="${esc(p.id)}">${delArm===p.id?'Toque de novo para confirmar':'Remover da lista'}</button>`:''}</div></div>`}).join('');
+}
+function drawComps(){
+  $('comps').innerHTML=my.companions.map((c,i)=>`<div class="row"><input type="text" data-i="${i}" value="${esc(c)}" placeholder="Nome do acompanhante"><button class="alt" data-r="${i}">✕</button></div>`).join('');
+}
+function drawMy(){
+  $('nm').value=my.name||'';
+  document.querySelectorAll('input[name=st]').forEach(r=>r.checked=r.value===my.status);
+  drawComps();
+}
+function drawAdmin(){
+  const sim=rsvps.filter(r=>r.status==='sim'),no=rsvps.filter(r=>r.status==='nao');
+  const comp=sim.reduce((a,r)=>a+(r.companions||[]).length,0);
+  $('sConf').textContent=sim.length;$('sComp').textContent=comp;$('sTot').textContent=sim.length+comp;$('sNo').textContent=no.length;
+  $('guests').innerHTML=rsvps.map(r=>`<tr><td>${esc(r.name)}</td><td>${r.status==='sim'?'Confirmado':r.status==='nao'?'Não vai':'—'}</td><td>${esc((r.companions||[]).join(', '))||'—'}</td><td>${(r.items||[]).length}</td></tr>`).join('')||'<tr><td colspan="4">Ninguém respondeu ainda.</td></tr>';
+}
+async function save(msg){
+  if(locked()){toast('O prazo para alterações terminou (10 dias antes do evento)');return false}
+  if(!my.name.trim()){toast('Informe seu nome primeiro');$('nm').focus();return false}
+  try{
+    await db.doc('rsvp/'+uid).set({name:my.name.trim(),status:my.status,companions:my.companions.map(c=>c.trim()).filter(Boolean),items:my.items,updatedAt:Date.now()});
+    if(msg)toast(msg);return true
+  }catch(e){toast('Não foi possível salvar. Tente novamente.');return false}
+}
+document.addEventListener('click',async e=>{
+  const b=e.target.closest('button');if(!b||!db)return;
+  if(b.dataset.t){const id=b.dataset.t;if(locked()){toast('O prazo para alterações terminou');return}if(!my.name.trim()){toast('Informe seu nome primeiro');$('nm').focus();return}
+    const had=my.items.includes(id);my.items=had?my.items.filter(x=>x!==id):[...my.items,id];drawGifts();await save(had?'Item removido':'Obrigada pelo carinho! 💚')}
+  else if(b.dataset.d){if(delArm===b.dataset.d){delArm=null;db.doc('products/'+b.dataset.d).delete()}else{delArm=b.dataset.d;drawGifts();setTimeout(()=>{delArm=null;drawGifts()},4000)}}
+  else if(b.dataset.r){if(locked()){toast('O prazo para alterações terminou (10 dias antes do evento)');return}my.companions.splice(+b.dataset.r,1);drawComps();if(hasResp)await save('Acompanhante removido')}
+  else if(b.id==='del'){if(locked()){toast('O prazo para excluir terminou (10 dias antes do evento)');return}
+    if(b.dataset.arm!=='1'){b.dataset.arm='1';b.textContent='Toque de novo para excluir';setTimeout(()=>{b.dataset.arm='';b.textContent='Excluir minha resposta'},4000);return}
+    try{await db.doc('rsvp/'+uid).delete();my={name:'',status:'',companions:[],items:[]};hasResp=false;b.dataset.arm='';b.textContent='Excluir minha resposta';drawMy();drawGifts();drawLock();toast('Resposta excluída')}catch(x){toast('Não foi possível excluir')}}
+  else if(b.id==='addC'){my.companions.push('');drawComps()}
+  else if(b.id==='tgl'){adminMode=!adminView();applyView()}
+  else if(b.id==='send'){my.name=$('nm').value;const s=document.querySelector('input[name=st]:checked');
+    if(!s){toast('Escolha se você vai ou não');return}my.status=s.value;
+    await save(my.status==='sim'?'Presença confirmada! 🌷':'Resposta registrada. Sentiremos sua falta!')}
+  else if(b.id==='saveEv'){try{await db.doc('config/event').set({when:$('eWhen').value,place:$('ePlace').value,note:$('eNote').value});toast('Informações salvas')}catch(x){toast('Erro ao salvar')}}
+  else if(b.id==='addP'){const f=$('pImg').files[0],d=$('pDesc').value.trim();
+    if(!f||!d){toast('Envie a imagem e escreva a descrição');return}
+    if(!assets){toast('Upload de imagem indisponível');return}
+    b.disabled=true;try{const r=await assets.upload(f);await db.collection('products').add({img:r.url,desc:d,fx,fy,z:fz,createdAt:Date.now()});$('pImg').value='';$('pDesc').value='';$('prevWrap').hidden=true;fx=50;fy=50;fz=1;toast('Presente adicionado')}catch(x){toast('Erro ao adicionar')}b.disabled=false}
+});
+document.addEventListener('input',e=>{
+  if(e.target.dataset&&e.target.dataset.i!==undefined)my.companions[+e.target.dataset.i]=e.target.value;
+  if(e.target.id==='nm')my.name=e.target.value;
+  if(e.target.name==='st'){$('compLbl').textContent=e.target.value==='sim'?'Acompanhantes (nome de cada um)':'Quem mais não poderá ir? (nome de cada um, se quiser)'}
+});
+function applyView(){const a=adminView();const t=$('tgl');t.hidden=!admin;t.textContent=a?'Ver como convidado':'Abrir painel das anfitriãs';$('admin').hidden=!a;$('rsvp').hidden=a;drawGifts()}
+function drawLock(){const l=locked();$('del').hidden=!hasResp;$('lockNote').textContent=l?'O prazo para alterar ou excluir a resposta terminou (10 dias antes do evento).':'Você pode alterar ou excluir sua resposta até 10 dias antes do evento.';$('send').disabled=l;$('addC').disabled=l}
+function paint(){const i=$('prevImg');i.style.objectPosition=fx+'% '+fy+'%';i.style.transformOrigin=fx+'% '+fy+'%';i.style.transform='scale('+fz+')'}
+$('pImg').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;$('prevImg').src=URL.createObjectURL(f);fx=50;fy=50;fz=1;$('zoom').value=1;$('prevWrap').hidden=false;paint()});
+$('zoom').addEventListener('input',e=>{fz=+e.target.value;paint()});
+let drag=null;const pv=$('prev');
+pv.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,fx,fy};pv.setPointerCapture(e.pointerId)});
+pv.addEventListener('pointermove',e=>{if(!drag)return;const w=pv.clientWidth;fx=Math.max(0,Math.min(100,drag.fx-(e.clientX-drag.x)/w*150));fy=Math.max(0,Math.min(100,drag.fy-(e.clientY-drag.y)/w*150));paint()});
+pv.addEventListener('pointerup',()=>{drag=null});
+addEventListener('hashchange',()=>{if(db)applyView()});
+async function init(){
+  try{user=await claude.use('user')}catch(e){}
+  admin=!!(user&&(user.isOwner()||user.canEdit()));
+  try{uid=user?await user.id():null}catch(e){}
+  try{db=await claude.use('db')}catch(e){}
+  if(!db||!uid){$('nodb').hidden=false;$('rsvp').hidden=true;return}
+  if(admin){try{assets=await claude.use('assets')}catch(e){}}applyView();
+  db.doc('config/event').onSnapshot(s=>drawEvent(s.data()||{}));
+  db.collection('products').orderBy('createdAt').onSnapshot(s=>{products=s.docs.map(d=>({id:d.id,...d.data()}));drawGifts()});
+  db.doc('rsvp/'+uid).onSnapshot(s=>{const d=s.data();hasResp=!!d;drawLock();if(d){my={name:d.name||'',status:d.status||'',companions:d.companions||[],items:d.items||[]};if(!document.activeElement||document.activeElement.tagName!=='INPUT')drawMy();drawGifts()}});
+  if(admin)db.collection('rsvp').onSnapshot(s=>{rsvps=s.docs.map(d=>({id:d.id,...d.data()}));drawAdmin();drawGifts()});
+}
+init();
+</script></body></html>
